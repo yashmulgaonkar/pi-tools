@@ -72,4 +72,10 @@ sudo systemctl stop oled-dash
 ## Notes
 
 - Pi 5: use system `python3-rpi-lgpio` via `--system-site-packages` if you add GPIO later; this app does **not** drive a physical LED.  
-- Fan thresholds are the kernel pwm-fan trip points (typically 50 / 60 / 67.5 / 75 °C).  
+- Fan thresholds are the kernel pwm-fan trip points (typically 50 / 60 / 67.5 / 75 °C).
+
+## License
+
+Copyright (c) 2026 Yash Mulgaonkar.
+
+Licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) — see the repository [LICENSE](../LICENSE).
