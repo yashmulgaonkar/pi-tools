@@ -6,8 +6,8 @@ After=multi-user.target
 Type=simple
 User=pi
 Group=pi
-WorkingDirectory=/home/pi
-ExecStart=/home/pi/oled-dash-venv/bin/python /home/pi/oled-dash.py
+WorkingDirectory=/home/pi/pi-tools/oled-dash
+ExecStart=/home/pi/oled-dash-venv/bin/python /home/pi/pi-tools/oled-dash/oled-dash.py
 Restart=on-failure
 RestartSec=3
 Environment=PYTHONUNBUFFERED=1

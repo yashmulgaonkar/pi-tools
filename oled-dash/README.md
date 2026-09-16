@@ -53,7 +53,7 @@ sudo i2cdetect -y 1
 
 ## Autostart (systemd)
 
-Edit paths in `oled-dash.service` if the install isn’t under `/home/pi`, then:
+The unit runs `/home/pi/pi-tools/oled-dash/oled-dash.py` with `/home/pi/oled-dash-venv`. Edit those paths if yours differ, then:
 
 ```bash
 sudo cp oled-dash.service /etc/systemd/system/
