@@ -24,17 +24,31 @@ On stop / `poweroff` / Ctrl-C: shows **Shutting down...** briefly, then blanks t
 
 ## Requirements
 
-- Raspberry Pi OS with I2C enabled  
+- Raspberry Pi OS with I2C enabled (`sudo raspi-config` → Interface Options → I2C → Enable, then reboot if you just turned it on)  
 - SSD1306 128×32 on I2C (default bus; display rotated 180° in code)  
 - Python 3.11+ recommended  
 
-## Setup
+Confirm the OLED is on the bus (often `0x3c`):
 
 ```bash
+sudo i2cdetect -y 1
+```
+
+## Setup
+
+Paths below match `oled-dash.service` (`/home/pi/pi-tools/oled-dash` + `/home/pi/oled-dash-venv`). Adjust if your user or layout differs.
+
+```bash
+# Get the code
+git clone https://github.com/yashmulgaonkar/pi-tools.git ~/pi-tools
+
+# System packages
+sudo apt update
 sudo apt install -y python3-venv python3-pil python3-psutil xfonts-terminus i2c-tools
-python3 -m venv --system-site-packages oled-dash-venv
-source oled-dash-venv/bin/activate
-pip install -r requirements.txt
+
+# Venv in home (not inside oled-dash/) so it matches the systemd unit
+python3 -m venv --system-site-packages ~/oled-dash-venv
+~/oled-dash-venv/bin/pip install -r ~/pi-tools/oled-dash/requirements.txt
 ```
 
 Fonts: **Terminus 12** regular + bold (`ter-u12n_unicode` / `ter-u12b_unicode` from `xfonts-terminus`).
@@ -44,21 +58,14 @@ Keep `ym-logo.png` next to `oled-dash.py`.
 ## Run
 
 ```bash
-./oled-dash-venv/bin/python oled-dash.py
-```
-
-Check the OLED is on the bus (often `0x3c`):
-
-```bash
-sudo i2cdetect -y 1
+cd ~/pi-tools/oled-dash
+~/oled-dash-venv/bin/python oled-dash.py
 ```
 
 ## Autostart (systemd)
 
-The unit runs `/home/pi/pi-tools/oled-dash/oled-dash.py` with `/home/pi/oled-dash-venv`. Edit those paths if yours differ, then:
-
 ```bash
-sudo cp oled-dash.service /etc/systemd/system/
+sudo cp ~/pi-tools/oled-dash/oled-dash.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now oled-dash
 ```
