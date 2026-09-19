@@ -10,6 +10,9 @@ WorkingDirectory=/home/pi/pi-tools/oled-dash
 ExecStart=/home/pi/oled-dash-venv/bin/python /home/pi/pi-tools/oled-dash/oled-dash.py
 Restart=on-failure
 RestartSec=3
+# Allow time to show "Shutting down..." and blank the OLED on stop/poweroff
+TimeoutStopSec=5
+KillSignal=SIGTERM
 Environment=PYTHONUNBUFFERED=1
 
 [Install]

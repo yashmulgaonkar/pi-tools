@@ -3,6 +3,7 @@
 
 import math
 import os
+import signal
 import socket
 import time
 from datetime import timedelta
@@ -18,11 +19,14 @@ REFRESH_SECONDS = 5
 CPU_SAMPLE_SECONDS = 0.25
 LED_FRAME_DT = 1.0 / 20
 SPLASH_SECONDS = 2.0
+SHUTDOWN_SECONDS = 1.5
 WIDTH, HEIGHT = 128, 32
 MARGIN = 2
 FAN_SIZE = 9
 ACTIVITY_LED_R = 4  # ~9px — aligns with Terminus 12 row height
 LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ym-logo.png")
+
+_shutdown_requested = False
 
 # Terminus 12 — crisp bitmap font for 1-bit OLEDs
 FONT_PATH = "/usr/share/fonts/X11/misc/ter-u12n_unicode.pcf.gz"
@@ -292,6 +296,28 @@ def splash():
     time.sleep(SPLASH_SECONDS)
 
 
+def request_shutdown(signum, frame):
+    global _shutdown_requested
+    _shutdown_requested = True
+
+
+def shutdown_display():
+    """Show a brief message, then blank the OLED so it doesn't freeze on last frame."""
+    try:
+        clear()
+        msg = "Shutting down..."
+        tw = text_width(msg, font_meta)
+        x = max(0, (WIDTH - tw) // 2)
+        y = max(0, (HEIGHT - FONT_SIZE) // 2)
+        draw.text((x, y), msg, font=font_meta, fill=255)
+        show()
+        time.sleep(SHUTDOWN_SECONDS)
+        clear()
+        show()
+    except OSError:
+        pass
+
+
 def main():
     psutil.cpu_percent(interval=None)
     splash()
@@ -300,7 +326,7 @@ def main():
     last_cpu = last_stats
     fan_frame = 0
 
-    while True:
+    while not _shutdown_requested:
         t0 = time.monotonic()
         fan_on = fan_rpm() > 0
 
@@ -329,8 +355,9 @@ def main():
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, request_shutdown)
+    signal.signal(signal.SIGINT, request_shutdown)
     try:
         main()
-    except KeyboardInterrupt:
-        clear()
-        show()
+    finally:
+        shutdown_display()

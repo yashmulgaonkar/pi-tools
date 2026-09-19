@@ -20,6 +20,8 @@ C  nn%     M  nn%     D  nn%
 
 Splash: `ym-logo.png` (YM monogram) for 2 seconds at start.
 
+On stop / `poweroff` / Ctrl-C: shows **Shutting down...** briefly, then blanks the OLED so the last stats frame does not stick.
+
 ## Requirements
 
 - Raspberry Pi OS with I2C enabled  
@@ -66,7 +68,7 @@ Useful commands:
 ```bash
 sudo systemctl status oled-dash
 sudo systemctl restart oled-dash
-sudo systemctl stop oled-dash
+sudo systemctl stop oled-dash   # shows "Shutting down..." then blanks OLED
 ```
 
 ## Notes
